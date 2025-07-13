@@ -15,9 +15,8 @@ export default function CompanyDetail() {
       .then(res => res.json())
       .then(setEmployees)
   }, [companyId])
-
+  
   if (!company) return <div>Loading...</div>
-
   return (
     <div>
       <h1>{company.name}</h1>
@@ -26,6 +25,7 @@ export default function CompanyDetail() {
         {employees.map(emp => (
           <li key={emp.id}>
             <Link to={`/employees/${emp.id}`}>{emp.name}</Link>
+            {console.log('emp', employees.id)}
           </li>
         ))}
       </ul>
