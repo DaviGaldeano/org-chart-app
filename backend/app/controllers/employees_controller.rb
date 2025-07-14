@@ -1,14 +1,23 @@
-class EmployeesController < ApplicationController
-  before_action :set_employee, only: [:destroy, :manager, :peers, :direct_reports, :indirect_reports]
+# frozen_string_literal: true
 
-  # GET /api/companies/:company_id/employees
+class EmployeesController < ApplicationController
+  before_action :set_employee, only: %i[destroy manager peers direct_reports indirect_reports]
+
   def index
     company = Company.find(params[:company_id])
     employees = company.employees
     render json: employees
   end
 
-  # POST /api/companies/:company_id/employees
+  def show
+    employee = Employee.find_by(id: params[:id])
+    if employee
+      render json: employee
+    else
+      render json: { error: 'Employee not found' }, status: :not_found
+    end
+  end
+
   def create
     company = Company.find(params[:company_id])
     employee = company.employees.new(employee_params)
@@ -20,22 +29,20 @@ class EmployeesController < ApplicationController
     end
   end
 
-  # DELETE /api/employees/:id
   def destroy
     @employee.destroy
     head :no_content
   end
 
-  # PATCH /api/employees/:id/manager
   def manager
     new_manager = Employee.find(params[:manager_id])
 
     if new_manager.company_id != @employee.company_id
-      return render json: { error: "Manager must belong to the same company" }, status: :unprocessable_entity
+      return render json: { error: 'Manager must belong to the same company' }, status: :unprocessable_entity
     end
 
     if causes_loop?(@employee, new_manager)
-      return render json: { error: "Cannot assign manager due to hierarchy loop" }, status: :unprocessable_entity
+      return render json: { error: 'Cannot assign manager due to hierarchy loop' }, status: :unprocessable_entity
     end
 
     @employee.manager = new_manager
@@ -46,7 +53,6 @@ class EmployeesController < ApplicationController
     end
   end
 
-  # GET /api/employees/:id/peers
   def peers
     if @employee.manager
       peers = @employee.manager.direct_reports.where.not(id: @employee.id)
@@ -56,12 +62,10 @@ class EmployeesController < ApplicationController
     end
   end
 
-  # GET /api/employees/:id/direct_reports
   def direct_reports
     render json: @employee.direct_reports
   end
 
-  # GET /api/employees/:id/indirect_reports
   def indirect_reports
     indirects = @employee.direct_reports.flat_map(&:direct_reports)
     render json: indirects
@@ -77,11 +81,11 @@ class EmployeesController < ApplicationController
     params.require(:employee).permit(:name, :email, :picture)
   end
 
-  # Detecta se haverá um ciclo (loop) na hierarquia
   def causes_loop?(employee, new_manager)
     current = new_manager
     while current
       return true if current == employee
+
       current = current.manager
     end
     false

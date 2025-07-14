@@ -1,16 +1,18 @@
+# frozen_string_literal: true
+
 # Clean up previous data
 Employee.destroy_all
 Company.destroy_all
 
 # Criação de uma empresa
-company = Company.create!(name: "Qulture Co.")
+company = Company.create!(name: 'Qulture Co.')
 
 # Criação dos colaboradores (sem gestor no começo)
-ceo = Employee.create!(name: "Alice CEO", email: "alice@qulture.co", picture: "", company: company)
-cto = Employee.create!(name: "Bruno CTO", email: "bruno@qulture.co", picture: "", company: company)
-cmo = Employee.create!(name: "Carla CMO", email: "carla@qulture.co", picture: "", company: company)
-dev = Employee.create!(name: "Daniel Dev", email: "daniel@qulture.co", picture: "", company: company)
-designer = Employee.create!(name: "Elisa Designer", email: "elisa@qulture.co", picture: "", company: company)
+ceo = Employee.create!(name: 'Alice CEO', email: 'alice@qulture.co', picture: '', company: company)
+cto = Employee.create!(name: 'Bruno CTO', email: 'bruno@qulture.co', picture: '', company: company)
+cmo = Employee.create!(name: 'Carla CMO', email: 'carla@qulture.co', picture: '', company: company)
+dev = Employee.create!(name: 'Daniel Dev', email: 'daniel@qulture.co', picture: '', company: company)
+designer = Employee.create!(name: 'Elisa Designer', email: 'elisa@qulture.co', picture: '', company: company)
 
 # Atualiza os gestores (evita erro de loop na criação)
 cto.update!(manager: ceo)
