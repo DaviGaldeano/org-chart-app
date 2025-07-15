@@ -22,7 +22,7 @@ async function deleteEmployeeById(employeeId) {
 }
 
 export default function CompanyDetail() {
-  const { companyId } = useParams()
+  const { id: companyId } = useParams()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
@@ -111,7 +111,7 @@ export default function CompanyDetail() {
 
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="section-title">
+            <h2 className="section-title flex items-center gap-1">
               <Users className="w-5 h-5 text-primary" />
               Colaboradores
             </h2>
@@ -137,12 +137,14 @@ export default function CompanyDetail() {
           ) : (
             <div className="list-modern">
               {employees.map(emp => (
-                <div key={emp.id} className="list-item">
+                <div key={emp.id} className="list-item flex items-center">
                   <Link
                     to={`/employees/${emp.id}`}
-                    className="list-item-link flex items-center gap-3 flex-1"
+                    className="list-item-link flex items-center gap-3 pb-4 flex-1"
                   >
-                    <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+                    <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center"
+                      style={{ marginRight: '0.5rem' }}
+                    >
                       <User className="w-5 h-5 text-primary" />
                     </div>
                     <div>
@@ -153,7 +155,7 @@ export default function CompanyDetail() {
                   <button
                     onClick={() => deleteEmployee(emp.id)}
                     disabled={mutation.isLoading}
-                    className="btn-destructive ml-4"
+                    className="btn-destructive ml-4 flex items-center gap-1"
                   >
                     <Trash2 className="w-4 h-4" />
                     Remover
@@ -166,7 +168,7 @@ export default function CompanyDetail() {
 
         <div className="form-actions flex flex-col sm:flex-row gap-3">
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => navigate('/organizations')}
             className="btn-secondary"
           >
             <ArrowLeft className="w-4 h-4" />

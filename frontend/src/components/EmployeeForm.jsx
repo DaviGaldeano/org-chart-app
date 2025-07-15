@@ -20,6 +20,7 @@ export default function EmployeeForm() {
   const [form, setForm] = useState({ name: '', email: '', picture: '' })
   const [errors, setErrors] = useState([])
   const { companyId } = useParams()
+  console.log(companyId)
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
@@ -160,7 +161,7 @@ export default function EmployeeForm() {
 
             <button
               type="button"
-              onClick={() => navigate(-1)}
+              onClick={() => navigate(`/companies/${companyId}`)}
               className="btn-secondary"
               disabled={mutation.isLoading}
             >

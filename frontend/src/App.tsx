@@ -21,10 +21,14 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<CompanyList />} />
+          <Route path="/organizations" element={<CompanyList />} />
           <Route path="/companies" element={<CompanyList />} />
           <Route path="/companies/new" element={<CompanyForm />} />
           <Route path="/companies/:id" element={<CompanyDetail />} />
-          <Route path="/companies/:companyId/employees/new" element={<EmployeeForm />} />
+          <Route
+            path="/companies/:companyId/employees/new"
+            element={<EmployeeForm />}
+          />
           <Route path="/employees/:employeeId" element={<EmployeeDetail />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
