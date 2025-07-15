@@ -11,6 +11,7 @@ Rails.application.routes.draw do
         get :peers
         get :direct_reports
         get :indirect_reports
+        get :candidates
       end
     end
   end

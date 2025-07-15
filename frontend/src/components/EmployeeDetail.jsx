@@ -4,6 +4,8 @@ import { useQuery } from '@tanstack/react-query'
 import { User, Mail, ArrowLeft, Building2 } from 'lucide-react'
 import AssignManager from './AssignManager'
 import DirectReports from './DirectReports'
+import Peers from './Peers'
+import IndirectReports from './IndirectReports'
 
 const fetchEmployee = async (employeeId) => {
   const res = await fetch(`/api/employees/${employeeId}`)
@@ -57,17 +59,9 @@ export default function EmployeeDetail() {
           <div className="flex-1">
             <div className="flex items-center gap-4 mb-6">
               <div className="relative">
-                {employee.picture ? (
-                  <img
-                    src={employee.picture}
-                    alt={employee.name}
-                    className="avatar-image"
-                  />
-                ) : (
-                  <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center">
-                    <User className="w-8 h-8 text-primary" />
-                  </div>
-                )}
+                <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center">
+                  <User className="w-8 h-8 text-primary" />
+                </div>
               </div>
               <div>
                 <h1 className="header-title">{employee.name}</h1>
@@ -83,6 +77,8 @@ export default function EmployeeDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           <AssignManager employeeId={employeeId} onAssign={refetch} />
           <DirectReports employeeId={employeeId} />
+          <Peers employeeId={employeeId} />
+          <IndirectReports employeeId={employeeId} />
         </div>
 
         <div className="flex justify-end">

@@ -43,12 +43,11 @@ export default function CompanyForm() {
 
   return (
     <div className="container-main">
-      <div className="card-elevated w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="p-4 bg-primary/20 rounded-xl w-fit mx-auto mb-4">
+      <div className="card-company w-full max-w-4xl">
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-4">
             <Building2 className="w-8 h-8 text-primary" />
           </div>
-          <h1 className="header-title">Cadastrar Empresa</h1>
           <p className="text-muted-foreground">
             Crie uma nova empresa no sistema
           </p>
@@ -68,25 +67,38 @@ export default function CompanyForm() {
 
         <form onSubmit={handleSubmit} className="form-container">
           <div className="form-group">
-            <label className="form-label">
-              Nome da Empresa
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              className="input-modern w-full"
-              placeholder="Digite o nome da empresa"
-              required
-              disabled={mutation.isLoading}
-            />
-          </div>
+            <div className='mb-2'>
+              <label className="form-label">Nome da Empresa</label>
+            </div>
 
-          <div className="form-actions">
+            <div className="relative mb-4">
+              <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 w-10 h-5 text-muted-foreground" />
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Digite o nome da empresa"
+                required
+                disabled={mutation.isLoading}
+                className="w-full pr-4 py-2 pl-8 rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              />
+            </div>
+          </div>
+          <div className="form-actions flex justify-between gap-2 mt-6">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="btn-secondary px-4 py-2 text-md flex items-center gap-2"
+              disabled={mutation.isLoading}
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Voltar
+            </button>
+
             <button
               type="submit"
               disabled={mutation.isLoading}
-              className="btn-primary flex-1"
+              className="btn-primary px-4 py-2 text-md flex items-center justify-center gap-2"
             >
               {mutation.isLoading ? (
                 <>
@@ -99,16 +111,6 @@ export default function CompanyForm() {
                   Cadastrar
                 </>
               )}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => navigate(-1)}
-              className="btn-secondary"
-              disabled={mutation.isLoading}
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Voltar
             </button>
           </div>
         </form>

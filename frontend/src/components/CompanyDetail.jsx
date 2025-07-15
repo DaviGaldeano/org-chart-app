@@ -53,9 +53,10 @@ export default function CompanyDetail() {
   const mutation = useMutation({
     mutationFn: (employeeId) => deleteEmployeeById(employeeId),
     onSuccess: () => {
-      queryClient.invalidateQueries(['employees', companyId])
+      queryClient.refetchQueries(['employees', companyId])
     },
   })
+
 
   const deleteEmployee = (id) => {
     mutation.mutate(id)
@@ -157,8 +158,14 @@ export default function CompanyDetail() {
                     disabled={mutation.isLoading}
                     className="btn-destructive ml-4 flex items-center gap-1"
                   >
-                    <Trash2 className="w-4 h-4" />
-                    Remover
+                    {mutation.isLoading ? (
+                      <div className="loading-spinner w-4 h-4" />
+                    ) : (
+                      <>
+                        <Trash2 className="w-4 h-4" />
+                        Remover
+                      </>
+                    )}
                   </button>
                 </div>
               ))}

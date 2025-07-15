@@ -62,6 +62,12 @@ class EmployeesController < ApplicationController
     end
   end
 
+  def candidates
+    employee = Employee.find(params[:id])
+    candidates = Employee.where(company_id: employee.company_id).where.not(id: employee.id)
+    render json: candidates
+  end
+
   def direct_reports
     render json: @employee.direct_reports
   end
@@ -78,7 +84,7 @@ class EmployeesController < ApplicationController
   end
 
   def employee_params
-    params.require(:employee).permit(:name, :email, :picture)
+    params.require(:employee).permit(:name, :email)
   end
 
   def causes_loop?(employee, new_manager)

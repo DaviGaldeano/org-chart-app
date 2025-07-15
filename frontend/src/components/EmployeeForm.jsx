@@ -17,10 +17,9 @@ const createEmployee = async ({ companyId, employee }) => {
 }
 
 export default function EmployeeForm() {
-  const [form, setForm] = useState({ name: '', email: '', picture: '' })
+  const [form, setForm] = useState({ name: '', email: '' })
   const [errors, setErrors] = useState([])
   const { companyId } = useParams()
-  console.log(companyId)
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
@@ -47,9 +46,9 @@ export default function EmployeeForm() {
 
   return (
     <div className="container-main">
-      <div className="card-elevated w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="p-4 bg-primary/20 rounded-xl w-fit mx-auto mb-4">
+      <div className="card-company w-full max-w-4xl">
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-4">
             <User className="w-8 h-8 text-primary" />
           </div>
           <h1 className="header-title">Novo Colaborador</h1>
@@ -71,80 +70,48 @@ export default function EmployeeForm() {
         )}
 
         <form onSubmit={handleSubmit} className="form-container">
-          <div className="form-group">
-            <label className="form-label">
-              <User className="w-4 h-4 inline mr-2" />
-              Nome Completo
-            </label>
+          <div className="mb-6 relative">
+            <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-10 h-5 text-muted-foreground" />
             <input
               name="name"
               type="text"
+              placeholder="Digite o nome completo"
               value={form.name}
               onChange={handleChange}
-              placeholder="Digite o nome completo"
-              className="input-modern w-full"
               required
               disabled={mutation.isLoading}
+              className="w-full pr-4 py-2 pl-8 rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             />
           </div>
 
-          <div className="form-group">
-            <label className="form-label">
-              <Mail className="w-4 h-4 inline mr-2" />
-              Email
-            </label>
+          <div className="mb-4 relative">
+            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-10 h-5 text-muted-foreground" />
             <input
               name="email"
               type="email"
+              placeholder="Digite o email"
               value={form.email}
               onChange={handleChange}
-              placeholder="Digite o email"
-              className="input-modern w-full"
               required
               disabled={mutation.isLoading}
-            />
+              className="w-full pr-4 py-2 pl-8 rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              />
           </div>
 
-          <div className="form-group">
-            <label className="form-label">
-              <Image className="w-4 h-4 inline mr-2" />
-              Foto de Perfil (URL)
-            </label>
-            <input
-              name="picture"
-              type="url"
-              value={form.picture}
-              onChange={handleChange}
-              placeholder="URL da foto de perfil (opcional)"
-              className="input-modern w-full"
+          <div className="form-actions flex justify-between gap-2 mt-6">
+            <button
+              type="button"
+              onClick={() => navigate(`/companies/${companyId}`)}
+              className="btn-secondary px-4 py-2 text-md flex items-center gap-2"
               disabled={mutation.isLoading}
-            />
-            <p className="text-sm text-muted-foreground mt-1">
-              Opcional: Cole o link de uma imagem para o perfil
-            </p>
-          </div>
-
-          {form.picture && (
-            <div className="form-group">
-              <label className="form-label">Preview da Foto</label>
-              <div className="flex justify-center">
-                <img
-                  src={form.picture}
-                  alt="Preview"
-                  className="w-20 h-20 rounded-full object-cover border-2 border-primary/20"
-                  onError={(e) => {
-                    e.target.style.display = 'none'
-                  }}
-                />
-              </div>
-            </div>
-          )}
-
-          <div className="form-actions">
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Voltar
+            </button>
             <button
               type="submit"
               disabled={mutation.isLoading}
-              className="btn-primary flex-1"
+              className="btn-primary px-4 py-2 text-md flex items-center justify-center gap-2"
             >
               {mutation.isLoading ? (
                 <>
@@ -158,17 +125,8 @@ export default function EmployeeForm() {
                 </>
               )}
             </button>
-
-            <button
-              type="button"
-              onClick={() => navigate(`/companies/${companyId}`)}
-              className="btn-secondary"
-              disabled={mutation.isLoading}
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Voltar
-            </button>
           </div>
+
         </form>
       </div>
     </div>
