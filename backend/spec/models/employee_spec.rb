@@ -11,7 +11,7 @@ RSpec.describe Employee, type: :model do
 
     it 'includes an error message for missing name' do
       employee = described_class.new(email: 'a@b.com')
-      employee.valid? # força a validação para popular errors
+      employee.valid?
       expect(employee.errors[:name]).to include("can't be blank")
     end
   end

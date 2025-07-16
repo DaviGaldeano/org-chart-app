@@ -36,16 +36,17 @@ class EmployeesController < ApplicationController
   end
 
   def manager
-    return render_error('Manager must belong to the same company') unless same_company?
+    new_manager = Employee.find(params[:manager_id])
 
-    return render_error('Cannot assign manager due to hierarchy loop') if check_hierarchy?(@employee, new_manager)
+   return render_error('Manager must belong to the same company') unless same_company?(new_manager)
+   return render_error('Cannot assign manager due to hierarchy loop') if check_hierarchy?(@employee, new_manager)
 
-    @employee.manager = new_manager
-    if @employee.save
-      render json: @employee
-    else
-      render json: { errors: @employee.errors.full_messages }, status: :unprocessable_entity
-    end
+   @employee.manager = new_manager
+   if @employee.save
+     render json: @employee
+   else
+     render json: { errors: @employee.errors.full_messages }, status: :unprocessable_entity
+   end
   end
 
   def peers
@@ -74,7 +75,7 @@ class EmployeesController < ApplicationController
 
   private
 
-  def same_company?
+  def same_company?(new_manager)
     new_manager.company_id == @employee.company_id
   end
 
@@ -91,12 +92,11 @@ class EmployeesController < ApplicationController
   end
 
   def check_hierarchy?(employee, new_manager)
-    current = new_manager
-    while current
-      Rails.logger.debug { "current.manager: #{current.manager.inspect}" }
-      return true if current == employee
+    current_manager = new_manager
+    while current_manager
+      return true if current_manager == employee
 
-      current = current.manager
+      current_manager = current_manager.manager
     end
     false
   end

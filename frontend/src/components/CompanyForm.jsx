@@ -1,39 +1,17 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Building2, Plus, ArrowLeft, AlertCircle } from 'lucide-react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-
-async function createCompany(newCompany) {
-  const res = await fetch('/api/companies', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ company: newCompany }),
-  })
-
-  if (!res.ok) {
-    const errorData = await res.json()
-    throw new Error(errorData.errors?.join(', ') || 'Failed to create company')
-  }
-
-  return res.json()
-}
+import { useCreateCompany } from '@/hooks/useCreateCompany'
 
 export default function CompanyForm() {
   const [name, setName] = useState('')
   const [errors, setErrors] = useState([])
   const navigate = useNavigate()
-  const queryClient = useQueryClient()
 
-  const mutation = useMutation({
-    mutationFn: createCompany,
-    onSuccess: (data) => {
-      queryClient.invalidateQueries(['companies'])
-      navigate(`/companies/${data.id}`)
-    },
-    onError: (error) => {
-      setErrors([error.message])
-    }
-  })
+  const mutation = useCreateCompany(
+    (data) => navigate(`/companies/${data.id}`),
+    (error) => setErrors([error.message])
+  )
 
   const handleSubmit = (e) => {
     e.preventDefault()

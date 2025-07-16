@@ -1,49 +1,18 @@
 import React, { useState } from 'react'
-import { UserCheck, ChevronDown, CheckCircle } from 'lucide-react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { UserCheck, CheckCircle } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-
-async function fetchCandidates(employeeId) {
-  const res = await fetch(`/api/employees/${employeeId}/candidates`)
-  if (!res.ok) throw new Error('Failed to fetch manager candidates')
-  return res.json()
-}
-
-async function assignManager(employeeId, managerId) {
-  const res = await fetch(`/api/employees/${employeeId}/manager`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ manager_id: managerId }),
-  })
-  if (!res.ok) {
-    const errorData = await res.json()
-    throw new Error(errorData?.error || 'Failed to assign manager')
-  }
-  return res.json()
-}
+import { useCandidates } from '@/hooks/useCandidates'
+import { useAssignManager } from '@/hooks/useAssignManager'
 
 export default function AssignManager({ employeeId, onAssign }) {
   const [selected, setSelected] = useState(null)
-  const queryClient = useQueryClient()
-
-  const { data: candidates = [], isLoading } = useQuery({
-    queryKey: ['candidates', employeeId],
-    queryFn: () => fetchCandidates(employeeId),
-    enabled: !!employeeId,
-  })
-
   const navigate = useNavigate()
 
-  const mutation = useMutation({
-    mutationFn: (managerId) => assignManager(employeeId, managerId),
-    onSuccess: (_data, managerId) => {
-      queryClient.invalidateQueries({ queryKey: ['employee', employeeId] })
-      onAssign()
-      navigate(`/employees/${managerId}`)
-    },
-    onError: (error) => {
-      alert(error.message)
-    },
+  const { data: candidates = [], isLoading } = useCandidates(employeeId)
+
+  const mutation = useAssignManager(employeeId, (managerId) => {
+    onAssign()
+    navigate(`/employees/${managerId}`)
   })
 
   const assign = () => {
@@ -60,36 +29,36 @@ export default function AssignManager({ employeeId, onAssign }) {
 
       {isLoading
         ? (
-          <div className="loading-spinner w-6 h-6"></div>
-        ) : candidates.length === 0 ? (
-          <p className="text-muted-foreground text-sm">
-            Nenhum colaborador disponível para ser gerente
-          </p>
-        ) : (
-          <div className="space-y-4">
-            <div className="relative">
-              <select
-                onChange={e => setSelected(e.target.value)}
-                value={selected || ''}
-                className="w-full pr-10 py-2 pl-3 px-2 rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent appearance-none"
-                disabled={mutation.isLoading}
-              >
-                <option value="">Selecione um gerente</option>
-                {candidates.map(candidate => (
-                  <option key={candidate.id} value={candidate.id}>
-                    {candidate.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+          <div className="loading-spinner w-6 h-6" />
+        ) : candidates.length === 0
+          ? (
+            <p className="text-muted-foreground text-sm">
+              Nenhum colaborador disponível para ser gerente
+            </p>
+          ) : (
+            <div className="space-y-4">
+              <div className="relative">
+                <select
+                  onChange={e => setSelected(e.target.value)}
+                  value={selected || ''}
+                  className="w-full pr-10 py-2 pl-3 px-2 rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent appearance-none"
+                  disabled={mutation.isLoading}
+                >
+                  <option value="">Selecione um gerente</option>
+                  {candidates.map(candidate => (
+                    <option key={candidate.id} value={candidate.id}>
+                      {candidate.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-            <button
-              onClick={assign}
-              disabled={!selected || mutation.isLoading}
-              className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {mutation.isLoading
-                ? (
+              <button
+                onClick={assign}
+                disabled={!selected || mutation.isLoading}
+                className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {mutation.isLoading ? (
                   <>
                     <div className="loading-spinner w-4 h-4"></div>
                     Atribuindo...
@@ -100,9 +69,9 @@ export default function AssignManager({ employeeId, onAssign }) {
                     Atribuir Gerente
                   </>
                 )}
-            </button>
-          </div>
-        )}
+              </button>
+            </div>
+          )}
     </div>
   )
 }

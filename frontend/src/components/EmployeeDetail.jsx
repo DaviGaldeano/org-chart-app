@@ -1,31 +1,20 @@
 import React from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
 import { User, Mail, ArrowLeft, Building2 } from 'lucide-react'
+import { useEmployee } from '@/hooks/useEmployee'
 import AssignManager from './AssignManager'
 import DirectReports from './DirectReports'
 import Peers from './Peers'
 import IndirectReports from './IndirectReports'
 
-const fetchEmployee = async (employeeId) => {
-  const res = await fetch(`/api/employees/${employeeId}`)
-  if (!res.ok) throw new Error('Erro ao carregar colaborador')
-  return res.json()
-}
-
 export default function EmployeeDetail() {
   const { employeeId } = useParams()
-
   const {
     data: employee,
     isLoading,
     isError,
     refetch,
-  } = useQuery({
-    queryKey: ['employee', employeeId],
-    queryFn: () => fetchEmployee(employeeId),
-    enabled: !!employeeId,
-  })
+  } = useEmployee(employeeId)
 
   if (isLoading) {
     return (

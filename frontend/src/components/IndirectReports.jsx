@@ -1,19 +1,9 @@
 import React from 'react'
-import { useQuery } from '@tanstack/react-query'
 import { Users } from 'lucide-react'
-
-const fetchIndirectReports = async (employeeId) => {
-  const res = await fetch(`/api/employees/${employeeId}/indirect_reports`)
-  if (!res.ok) throw new Error('Erro ao carregar liderados indiretos')
-  return res.json()
-}
+import { useIndirectReports } from '@/hooks/useIndirectReports'
 
 export default function IndirectReports({ employeeId }) {
-  const { data: indirects = [], isLoading } = useQuery({
-    queryKey: ['indirectReports', employeeId],
-    queryFn: () => fetchIndirectReports(employeeId),
-    enabled: !!employeeId,
-  })
+  const { data: indirects = [], isLoading } = useIndirectReports(employeeId)
 
   return (
     <div className="card-elevated">
@@ -21,6 +11,7 @@ export default function IndirectReports({ employeeId }) {
         <Users className="w-5 h-5 text-primary" />
         Liderados Indiretos
       </h2>
+
       {isLoading ? (
         <p className="text-muted-foreground">Carregando liderados...</p>
       ) : indirects.length === 0 ? (

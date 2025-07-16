@@ -1,25 +1,11 @@
 import React, { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
 import { Building2, Plus, Search, Building } from 'lucide-react'
-
-const fetchCompanies = async () => {
-  const res = await fetch('/api/companies')
-  if (!res.ok) throw new Error('Erro ao carregar empresas')
-  return res.json()
-}
+import { useCompanies } from '@/hooks/useCompanies'
 
 export default function CompanyList() {
   const [searchTerm, setSearchTerm] = useState('')
-
-  const {
-    data: companies = [],
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ['companies'],
-    queryFn: fetchCompanies,
-  })
+  const { data: companies = [], isLoading, isError } = useCompanies()
 
   const filteredCompanies = useMemo(() => {
     return companies.filter((company) =>
@@ -72,22 +58,23 @@ export default function CompanyList() {
           />
         </div>
 
-        {filteredCompanies.length === 0 ? (
-          <div className="text-center py-12">
-            <Building2 className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground text-lg">
-              {searchTerm
-                ? 'Nenhuma empresa encontrada'
-                : 'Nenhuma empresa cadastrada'}
-            </p>
-            <p className="text-muted-foreground text-sm mt-2">
-              {searchTerm
-                ? 'Tente buscar por outro termo'
-                : 'Cadastre a primeira empresa para começar'}
-            </p>
-          </div>
-        ) : (
-          <div className="list-modern mb-8">
+        {filteredCompanies.length === 0
+          ? (
+            <div className="text-center py-12">
+              <Building2 className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground text-lg">
+                {searchTerm
+                  ? 'Nenhuma empresa encontrada'
+                  : 'Nenhuma empresa cadastrada'}
+              </p>
+              <p className="text-muted-foreground text-sm mt-2">
+                {searchTerm
+                  ? 'Tente buscar por outro termo'
+                  : 'Cadastre a primeira empresa para começar'}
+              </p>
+            </div>
+          ) : (
+            <div className="list-modern mb-8">
               {filteredCompanies.map((company) => (
                 <div
                   key={company.id}
@@ -97,7 +84,10 @@ export default function CompanyList() {
                     to={`/companies/${company.id}`}
                     className="list-item-link flex items-center gap-3 p-4 flex-1"
                   >
-                    <div style={{ marginRight: '0.5rem' }} className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center">
+                    <div
+                      style={{ marginRight: '0.5rem' }}
+                      className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center"
+                    >
                       <Building2 className="w-10 h-6 text-primary" />
                     </div>
                     <div>
@@ -109,9 +99,8 @@ export default function CompanyList() {
                   </Link>
                 </div>
               ))}
-
-          </div>
-        )}
+            </div>
+          )}
 
         <div className="text-center">
           <Link to="/companies/new" className="btn-primary inline-flex">

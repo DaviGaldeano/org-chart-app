@@ -45,19 +45,17 @@ RSpec.describe 'Employees API', type: :request do
   end
 
   describe 'GET /api/employees/:id/peers' do
+    let(:company) { Company.create!(name: 'Empresa') }
+    let(:manager) { Employee.create!(name: 'Manager', email: 'mgr@test.com', company: company) }
+    let!(:employee1) { Employee.create!(name: 'Emp1', email: 'e1@test.com', company: company, manager: manager) }
+    let!(:employee2) { Employee.create!(name: 'Emp2', email: 'e2@test.com', company: company, manager: manager) }
+
     it 'returns the peers of an employee' do
-      manager = company.employees.create!(name: 'Manager', email: 'm@x.com')
-      let(:manager) { described_class.create!(name: 'Manager', email: 'mgr@test.com', company: company) }
-      let(:subordinate) do
-        described_class.create!(name: 'Subordinate', email: 'sub@test.com', company: company, manager: manager)
-      end
-
-      get "/api/employees/#{emp1.id}/peers"
-
+      get "/api/employees/#{employee1.id}/peers"
       expect(response).to have_http_status(:ok)
-      data = response.parsed_body
-      expect(data.map { |e| e['id'] }).to include(emp2.id)
-      expect(data.map { |e| e['id'] }).not_to include(emp1.id)
+      json = response.parsed_body
+      expect(json.map { |e| e['id'] }).to include(employee2.id)
+      expect(json.map { |e| e['id'] }).not_to include(employee1.id)
     end
   end
 end

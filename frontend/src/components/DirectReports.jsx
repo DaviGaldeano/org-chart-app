@@ -1,24 +1,10 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
 import { Users, User, ExternalLink } from 'lucide-react'
-
-const fetchDirectReports = async (employeeId) => {
-  const res = await fetch(`/api/employees/${employeeId}/direct_reports`)
-  if (!res.ok) throw new Error('Erro ao carregar Liderados diretos')
-  return res.json()
-}
+import { useDirectReports } from '@/hooks/useDirectReports'
 
 export default function DirectReports({ employeeId }) {
-  const {
-    data: reports = [],
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ['directReports', employeeId],
-    queryFn: () => fetchDirectReports(employeeId),
-    enabled: !!employeeId
-  })
+  const { data: reports = [], isLoading, isError } = useDirectReports(employeeId)
 
   if (isLoading) {
     return (
@@ -55,33 +41,33 @@ export default function DirectReports({ employeeId }) {
         </div>
       ) : (
         <div className="space-y-2">
-            {reports.map((report) => (
-              <div
-                key={report.id}
-                className="flex items-center justify-between p-3 bg-background/50 rounded-lg border border-border/30 hover:border-border/50 transition-all duration-300"
-              >
-                <div className="flex items-center gap-3">
-                  {report.picture ? (
-                    <img
-                      src={report.picture}
-                      alt={`Foto de ${report.name}`}
-                      className="w-8 h-8 mr-2 rounded-full object-cover border border-muted"
-                    />
-                  ) : (
-                    <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
-                      <User className="w-4 h-4 text-primary" />
-                    </div>
-                  )}
-                  <div>
-                    <div className="font-medium">{report.name}</div>
-                    <div className="text-sm text-muted-foreground">Relatório direto</div>
+          {reports.map((report) => (
+            <div
+              key={report.id}
+              className="flex items-center justify-between p-3 bg-background/50 rounded-lg border border-border/30 hover:border-border/50 transition-all duration-300"
+            >
+              <div className="flex items-center gap-3">
+                {report.picture ? (
+                  <img
+                    src={report.picture}
+                    alt={`Foto de ${report.name}`}
+                    className="w-8 h-8 mr-2 rounded-full object-cover border border-muted"
+                  />
+                ) : (
+                  <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
+                    <User className="w-4 h-4 text-primary" />
                   </div>
+                )}
+                <div>
+                  <div className="font-medium">{report.name}</div>
+                  <div className="text-sm text-muted-foreground">Relatório direto</div>
                 </div>
-                <Link to={`/employees/${report.id}`} className="btn-ghost p-2">
-                  <ExternalLink className="w-4 h-4" />
-                </Link>
               </div>
-            ))}
+              <Link to={`/employees/${report.id}`} className="btn-ghost p-2">
+                <ExternalLink className="w-4 h-4" />
+              </Link>
+            </div>
+          ))}
         </div>
       )}
     </div>

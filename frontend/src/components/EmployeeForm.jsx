@@ -1,38 +1,19 @@
 import React, { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { User, Mail, Image, Plus, ArrowLeft, AlertCircle } from 'lucide-react'
-
-const createEmployee = async ({ companyId, employee }) => {
-  const res = await fetch(`/api/companies/${companyId}/employees`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ employee }),
-  })
-  if (!res.ok) {
-    const data = await res.json()
-    throw new Error(data.errors ? data.errors.join(', ') : 'Erro ao criar colaborador')
-  }
-  return res.json()
-}
+import { useCreateEmployee } from '@/hooks/useCreateEmployee'
 
 export default function EmployeeForm() {
   const [errors, setErrors] = useState([])
   const [form, setForm] = useState({ name: '', email: '', picture: '' })
   const { companyId } = useParams()
   const navigate = useNavigate()
-  const queryClient = useQueryClient()
 
-  const mutation = useMutation({
-    mutationFn: () => createEmployee({ companyId, employee: form }),
-    onSuccess: (data) => {
-      queryClient.invalidateQueries(['employees', companyId])
-      navigate(`/employees/${data.id}`)
-    },
-    onError: (error) => {
-      setErrors(error.message.split(', '))
-    },
-  })
+  const mutation = useCreateEmployee(
+    companyId,
+    (data) => navigate(`/employees/${data.id}`),
+    (error) => setErrors(error.message.split(', '))
+  )
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -41,7 +22,7 @@ export default function EmployeeForm() {
   const handleSubmit = (e) => {
     e.preventDefault()
     setErrors([])
-    mutation.mutate()
+    mutation.mutate(form)
   }
 
   return (
@@ -94,7 +75,7 @@ export default function EmployeeForm() {
               required
               disabled={mutation.isLoading}
               className="w-full pr-4 py-2 pl-8 rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-              />
+            />
           </div>
 
           <div className="mb-4 relative">
@@ -123,7 +104,6 @@ export default function EmployeeForm() {
             <button
               type="submit"
               disabled={mutation.isLoading}
-
               className="btn-primary px-4 py-2 text-md flex items-center justify-center gap-2"
             >
               {mutation.isLoading ? (
@@ -139,7 +119,6 @@ export default function EmployeeForm() {
               )}
             </button>
           </div>
-
         </form>
       </div>
     </div>

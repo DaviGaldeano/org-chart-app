@@ -9,12 +9,14 @@ RSpec.describe Company, type: :model do
   end
 
   it 'is invalid without a name' do
-    expect(obj.valid?).to be false
+    company = described_class.new(name: nil)
+    expect(company.valid?).to be false
   end
 
   it 'includes error message for name' do
-    obj.valid?
-    expect(obj.errors[:name]).to include("can't be blank")
+    company = described_class.new(name: nil)
+    company.valid?
+    expect(company.errors[:name]).to include("can't be blank")
   end
 
   it 'destroys its employees when deleted' do

@@ -1,32 +1,13 @@
 import React, { useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { Building2, Users, Plus, ArrowLeft, Trash2, User } from 'lucide-react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-
-async function fetchCompany(companyId) {
-  const res = await fetch(`/api/companies/${companyId}`)
-  if (!res.ok) throw new Error('Failed to fetch company')
-  return res.json()
-}
-
-async function fetchEmployees(companyId) {
-  const res = await fetch(`/api/companies/${companyId}/employees`)
-  if (!res.ok) throw new Error('Failed to fetch employees')
-  return res.json()
-}
-
-async function deleteEmployeeById(employeeId) {
-  const res = await fetch(`/api/employees/${employeeId}`, { method: 'DELETE' })
-  if (!res.ok) throw new Error('Failed to delete employee')
-
-  if (res.status === 204) return null
-  return res.json()
-}
+import { useCompany } from '@/hooks/useCompany'
+import { useCompanyEmployees } from '@/hooks/useCompanyEmployees'
+import { useDeleteEmployee } from '@/hooks/useDeleteEmployee'
 
 export default function CompanyDetail() {
   const { id: companyId } = useParams()
   const navigate = useNavigate()
-  const queryClient = useQueryClient()
   const [deletingEmployeeId, setDeletingEmployeeId] = useState(null)
 
   const {
@@ -34,46 +15,25 @@ export default function CompanyDetail() {
     isLoading: loadingCompany,
     isError: errorCompany,
     error: errorCompanyObj,
-  } = useQuery({
-    queryKey: ['company', companyId],
-    queryFn: () => fetchCompany(companyId),
-    enabled: !!companyId,
-    staleTime: 0,
-  })
+  } = useCompany(companyId)
 
   const {
     data: employees = [],
     isLoading: loadingEmployees,
     isError: errorEmployees,
     error: errorEmployeesObj,
-  } = useQuery({
-    queryKey: ['employees', companyId],
-    queryFn: () => fetchEmployees(companyId),
-    enabled: !!companyId,
-    staleTime: 0,
-  })
+  } = useCompanyEmployees(companyId)
 
-  const mutation = useMutation({
-    mutationFn: (employeeId) => deleteEmployeeById(employeeId),
-    onSuccess: () => {
-      queryClient.refetchQueries(['employees', companyId])
-    },
-  })
+  const mutation = useDeleteEmployee(
+    companyId,
+    () => alert('Colaborador removido com sucesso!'),
+    (error) => alert('Erro ao remover colaborador: ' + error.message),
+    () => setDeletingEmployeeId(null)
+  )
 
   const deleteEmployee = (id) => {
     setDeletingEmployeeId(id)
-    mutation.mutate(id, {
-      onSettled: () => {
-        setDeletingEmployeeId(null)
-      },
-      onSuccess: () => {
-        queryClient.refetchQueries(['employees', companyId])
-        alert('Colaborador removido com sucesso!')
-      },
-      onError: (error) => {
-        alert('Erro ao remover colaborador: ' + error.message)
-      }
-    })
+    mutation.mutate(id)
   }
 
   if (loadingCompany || loadingEmployees) {
@@ -130,10 +90,7 @@ export default function CompanyDetail() {
               <Users className="w-5 h-5 text-primary" />
               Colaboradores
             </h2>
-            <Link
-              to={`/companies/${companyId}/employees/new`}
-              className="btn-primary"
-            >
+            <Link to={`/companies/${companyId}/employees/new`} className="btn-primary">
               <Plus className="w-4 h-4" />
               Novo Colaborador
             </Link>
@@ -157,9 +114,7 @@ export default function CompanyDetail() {
                     to={`/employees/${emp.id}`}
                     className="list-item-link flex items-center gap-3 pb-4 flex-1"
                   >
-                    <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center"
-                      style={{ marginRight: '0.5rem' }}
-                    >
+                    <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center" style={{ marginRight: '0.5rem' }}>
                       {emp.picture ? (
                         <img
                           src={emp.picture}
@@ -196,10 +151,7 @@ export default function CompanyDetail() {
         </div>
 
         <div className="form-actions flex flex-col sm:flex-row gap-3">
-          <button
-            onClick={() => navigate('/organizations')}
-            className="btn-secondary"
-          >
+          <button onClick={() => navigate('/organizations')} className="btn-secondary">
             <ArrowLeft className="w-4 h-4" />
             Voltar
           </button>
