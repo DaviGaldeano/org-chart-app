@@ -1,32 +1,39 @@
 # frozen_string_literal: true
 
-# Clean up previous data
-Employee.destroy_all
-Company.destroy_all
+Rails.logger.debug 'Seeding companies...'
+companies_data = [
+  { name: 'Qulture Co.' },
+  { name: 'Uol' }
+]
 
-# Criação de uma empresa
-company = Company.create!(name: 'Qulture Co.')
+companies = companies_data.map { |attrs| Company.create!(attrs) }
+qulture, uol = companies
 
-# Criação dos colaboradores (sem gestor no começo)
-ceo = Employee.create!(name: 'Alice CEO', email: 'alice@qulture.co', picture: '', company: company)
-cto = Employee.create!(name: 'Bruno CTO', email: 'bruno@qulture.co', picture: '', company: company)
-cmo = Employee.create!(name: 'Carla CMO', email: 'carla@qulture.co', picture: '', company: company)
-dev = Employee.create!(name: 'Daniel Dev', email: 'daniel@qulture.co', picture: '', company: company)
-designer = Employee.create!(name: 'Elisa Designer', email: 'elisa@qulture.co', picture: '', company: company)
+Rails.logger.debug 'Seeding employees (step 1 - without managers)...'
 
-# Atualiza os gestores (evita erro de loop na criação)
-cto.update!(manager: ceo)
-cmo.update!(manager: ceo)
-dev.update!(manager: cto)
-designer.update!(manager: cmo)
+employees_data = [
+  { name: 'Gerente', email: 'davi@gmail.com', picture: 'https://i.pravatar.cc/150?img=3', company: qulture },
+  { name: 'LiderDoGerente', email: 'daviLiderDo@gmail.com', picture: 'https://i.pravatar.cc/150?img=25',
+    company: qulture },
+  { name: 'Colaborador', email: 'davi2@gmail.com', picture: 'https://i.pravatar.cc/150?img=10', company: qulture },
+  { name: 'estagiário', email: 'daviss@gmail.com', picture: 'https://i.pravatar.cc/150?img=1', company: qulture },
+  { name: 'LiderGerenteUol', email: 'da@gmail.com', picture: 'https://i.pravatar.cc/150?img=50', company: uol },
+  { name: 'GerenteUol', email: 'galdeano@gmail.com', picture: 'https://i.pravatar.cc/150?img=15', company: uol },
+  { name: 'ColaboradorUol', email: 'davissax@gmail.com', picture: 'https://i.pravatar.cc/150?img=16', company: uol }
+]
 
-puts "Seeded #{Employee.count} employees for company '#{company.name}'"
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
+# cria sem manager
+employees = {}
+employees_data.each do |attrs|
+  employees[attrs[:email]] = Employee.create!(attrs)
+end
+
+Rails.logger.debug 'Updating manager relationships (step 2)...'
+
+employees['davi@gmail.com'].update!(manager: employees['daviLiderDo@gmail.com'])
+employees['davi2@gmail.com'].update!(manager: employees['davi@gmail.com'])
+employees['daviss@gmail.com'].update!(manager: employees['davi2@gmail.com'])
+employees['galdeano@gmail.com'].update!(manager: employees['da@gmail.com'])
+employees['davissax@gmail.com'].update!(manager: employees['galdeano@gmail.com'])
+
+Rails.logger.debug '✅ Seed concluído com sucesso!'

@@ -25,6 +25,7 @@ ActiveRecord::Schema[7.1].define(version: 20_250_713_170_603) do
   create_table 'employees', force: :cascade do |t|
     t.string 'name'
     t.string 'email'
+    t.string 'picture'
     t.bigint 'company_id', null: false
     t.bigint 'manager_id'
     t.datetime 'created_at', null: false

@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# app/controllers/employees_controller.rb
 class EmployeesController < ApplicationController
   before_action :set_employee, only: %i[destroy manager peers direct_reports indirect_reports]
 
@@ -35,15 +36,9 @@ class EmployeesController < ApplicationController
   end
 
   def manager
-    new_manager = Employee.find(params[:manager_id])
+    return render_error('Manager must belong to the same company') unless same_company?
 
-    if new_manager.company_id != @employee.company_id
-      return render json: { error: 'Manager must belong to the same company' }, status: :unprocessable_entity
-    end
-
-    if causes_loop?(@employee, new_manager)
-      return render json: { error: 'Cannot assign manager due to hierarchy loop' }, status: :unprocessable_entity
-    end
+    return render_error('Cannot assign manager due to hierarchy loop') if check_hierarchy?(@employee, new_manager)
 
     @employee.manager = new_manager
     if @employee.save
@@ -79,17 +74,26 @@ class EmployeesController < ApplicationController
 
   private
 
+  def same_company?
+    new_manager.company_id == @employee.company_id
+  end
+
+  def render_error(msg)
+    render json: { error: msg }, status: :unprocessable_entity
+  end
+
   def set_employee
     @employee = Employee.find(params[:id])
   end
 
   def employee_params
-    params.require(:employee).permit(:name, :email)
+    params.require(:employee).permit(:name, :email, :picture)
   end
 
-  def causes_loop?(employee, new_manager)
+  def check_hierarchy?(employee, new_manager)
     current = new_manager
     while current
+      Rails.logger.debug { "current.manager: #{current.manager.inspect}" }
       return true if current == employee
 
       current = current.manager

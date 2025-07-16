@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# app/controllers/companies_controller.rb
 class CompaniesController < ApplicationController
   def index
     companies = Company.all

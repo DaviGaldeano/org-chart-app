@@ -1,0 +1,44 @@
+# .rubocop.yml
+
+AllCops:
+  TargetRubyVersion: 3.2
+  NewCops: enable
+  Exclude:
+    - "bin/*"
+    - "db/schema.rb"
+    - "node_modules/**/*"
+    - "tmp/**/*"
+    - "vendor/**/*"
+
+# Desativa exigência de comentários de documentação nas classes
+Style/Documentation:
+  Enabled: false
+
+# Permite métodos maiores em specs e controllers
+Metrics/BlockLength:
+  Exclude:
+    - "spec/**/*"
+    - "app/controllers/**/*"
+
+Metrics/MethodLength:
+  Max: 15
+
+Metrics/PerceivedComplexity:
+  Max: 10
+
+Metrics/CyclomaticComplexity:
+  Max: 10
+
+Layout/LineLength:
+  Max: 120
+
+# Ativa cops específicos para Rails
+require:
+  - rubocop-rails
+  - rubocop-rspec
+
+Rails:
+  Enabled: true
+
+RSpec:
+  Enabled: true

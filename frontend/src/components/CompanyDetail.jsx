@@ -160,7 +160,15 @@ export default function CompanyDetail() {
                     <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center"
                       style={{ marginRight: '0.5rem' }}
                     >
-                      <User className="w-5 h-5 text-primary" />
+                      {emp.picture ? (
+                        <img
+                          src={emp.picture}
+                          alt={`Foto de ${emp.name}`}
+                          className="rounded-full object-cover border border-muted"
+                        />
+                      ) : (
+                        <User className="w-8 h-8 text-primary" />
+                      )}
                     </div>
                     <div>
                       <div className="font-medium">{emp.name}</div>

@@ -59,9 +59,17 @@ export default function EmployeeDetail() {
           <div className="flex-1">
             <div className="flex items-center gap-4 mb-6">
               <div className="relative">
-                <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center">
-                  <User className="w-8 h-8 text-primary" />
-                </div>
+                {employee.picture ? (
+                  <img
+                    src={employee.picture}
+                    alt={`Foto de ${employee.name}`}
+                    className="w-16 h-16 rounded-full object-cover border border-muted"
+                  />
+                ) : (
+                  <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center">
+                    <User className="w-8 h-8 text-primary" />
+                  </div>
+                )}
               </div>
               <div>
                 <h1 className="header-title">{employee.name}</h1>

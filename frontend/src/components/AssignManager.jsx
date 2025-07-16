@@ -39,13 +39,12 @@ export default function AssignManager({ employeeId, onAssign }) {
     onSuccess: (_data, managerId) => {
       queryClient.invalidateQueries({ queryKey: ['employee', employeeId] })
       onAssign()
-      navigate(`/employees/${managerId}`) // redireciona para o gerente
+      navigate(`/employees/${managerId}`)
     },
     onError: (error) => {
       alert(error.message)
     },
   })
-
 
   const assign = () => {
     if (!selected) return

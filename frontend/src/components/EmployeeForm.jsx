@@ -17,17 +17,17 @@ const createEmployee = async ({ companyId, employee }) => {
 }
 
 export default function EmployeeForm() {
-  const [form, setForm] = useState({ name: '', email: '' })
   const [errors, setErrors] = useState([])
+  const [form, setForm] = useState({ name: '', email: '', picture: '' })
   const { companyId } = useParams()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
     mutationFn: () => createEmployee({ companyId, employee: form }),
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries(['employees', companyId])
-      navigate(`/companies/${companyId}`)
+      navigate(`/employees/${data.id}`)
     },
     onError: (error) => {
       setErrors(error.message.split(', '))
@@ -97,6 +97,19 @@ export default function EmployeeForm() {
               />
           </div>
 
+          <div className="mb-4 relative">
+            <Image className="absolute left-3 top-1/2 transform -translate-y-1/2 w-10 h-5 text-muted-foreground" />
+            <input
+              name="picture"
+              type="text"
+              placeholder="URL da imagem (opcional)"
+              value={form.picture}
+              onChange={handleChange}
+              disabled={mutation.isLoading}
+              className="w-full pr-4 py-2 pl-8 rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            />
+          </div>
+
           <div className="form-actions flex justify-between gap-2 mt-6">
             <button
               type="button"
@@ -110,6 +123,7 @@ export default function EmployeeForm() {
             <button
               type="submit"
               disabled={mutation.isLoading}
+
               className="btn-primary px-4 py-2 text-md flex items-center justify-center gap-2"
             >
               {mutation.isLoading ? (

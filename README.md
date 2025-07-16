@@ -65,17 +65,17 @@ O objetivo é implementar funcionalidades de cadastro, listagem, visualização 
 
 ### 1. Pré-requisitos
 
-- Ruby (versão usada no projeto)
+- Ruby (3.0.3)
 - Rails
-- Node.js + npm ou yarn
+- Node.js + npm
 - PostgreSQL
 - Git
 
 ### 2. Clonar o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/seu-repositorio.git
-cd seu-repositorio
+git clone git@github.com:DaviGaldeano/org-chart-app.git
+cd org-chart-app
 ````
 
 ---
@@ -90,7 +90,7 @@ bundle install
 
 rails db:create
 rails db:migrate
-rails db:seed # opcional
+rails db:seed 
 rails server
 ```
 
@@ -103,12 +103,9 @@ O backend estará disponível em: [http://localhost:3000](http://localhost:3000)
 ```bash
 cd ../frontend
 npm install
-# ou yarn install
-
 npm run dev
-# ou yarn dev
-```
 
+```
 O frontend estará disponível em: [http://localhost:5173](http://localhost:5173)
 
 ---
@@ -118,5 +115,4 @@ O frontend estará disponível em: [http://localhost:5173](http://localhost:5173
 ```bash
 cd backend
 bundle exec rspec
-# ou rails test
 ```

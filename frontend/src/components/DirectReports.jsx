@@ -5,7 +5,7 @@ import { Users, User, ExternalLink } from 'lucide-react'
 
 const fetchDirectReports = async (employeeId) => {
   const res = await fetch(`/api/employees/${employeeId}/direct_reports`)
-  if (!res.ok) throw new Error('Erro ao carregar relatórios diretos')
+  if (!res.ok) throw new Error('Erro ao carregar Liderados diretos')
   return res.json()
 }
 
@@ -17,7 +17,7 @@ export default function DirectReports({ employeeId }) {
   } = useQuery({
     queryKey: ['directReports', employeeId],
     queryFn: () => fetchDirectReports(employeeId),
-    enabled: !!employeeId, // só executa se employeeId estiver definido
+    enabled: !!employeeId
   })
 
   if (isLoading) {
@@ -25,7 +25,7 @@ export default function DirectReports({ employeeId }) {
       <div className="bg-background/30 rounded-lg p-4 border border-border/30">
         <div className="flex items-center gap-2 mb-4">
           <Users className="w-5 h-5 text-primary" />
-          <h3 className="font-semibold">Relatórios Diretos</h3>
+          <h3 className="font-semibold">Liderados diretos</h3>
         </div>
         <div className="loading-spinner w-6 h-6"></div>
       </div>
@@ -35,7 +35,7 @@ export default function DirectReports({ employeeId }) {
   if (isError) {
     return (
       <div className="bg-background/30 rounded-lg p-4 border border-border/30 text-red-500">
-        Erro ao carregar relatórios diretos.
+        Erro ao carregar liderados diretos.
       </div>
     )
   }
@@ -44,7 +44,7 @@ export default function DirectReports({ employeeId }) {
     <div className="bg-background/30 rounded-lg p-4 border border-border/30">
       <div className="flex items-center gap-2 mb-4">
         <Users className="w-5 h-5 text-primary" />
-        <h3 className="font-semibold">Relatórios Diretos</h3>
+        <h3 className="font-semibold">Liderados diretos</h3>
         <span className="text-sm text-muted-foreground">({reports.length})</span>
       </div>
 
@@ -55,25 +55,33 @@ export default function DirectReports({ employeeId }) {
         </div>
       ) : (
         <div className="space-y-2">
-          {reports.map((report) => (
-            <div
-              key={report.id}
-              className="flex items-center justify-between p-3 bg-background/50 rounded-lg border border-border/30 hover:border-border/50 transition-all duration-300"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
-                  <User className="w-4 h-4 text-primary" />
+            {reports.map((report) => (
+              <div
+                key={report.id}
+                className="flex items-center justify-between p-3 bg-background/50 rounded-lg border border-border/30 hover:border-border/50 transition-all duration-300"
+              >
+                <div className="flex items-center gap-3">
+                  {report.picture ? (
+                    <img
+                      src={report.picture}
+                      alt={`Foto de ${report.name}`}
+                      className="w-8 h-8 mr-2 rounded-full object-cover border border-muted"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
+                      <User className="w-4 h-4 text-primary" />
+                    </div>
+                  )}
+                  <div>
+                    <div className="font-medium">{report.name}</div>
+                    <div className="text-sm text-muted-foreground">Relatório direto</div>
+                  </div>
                 </div>
-                <div>
-                  <div className="font-medium">{report.name}</div>
-                  <div className="text-sm text-muted-foreground">Relatório direto</div>
-                </div>
+                <Link to={`/employees/${report.id}`} className="btn-ghost p-2">
+                  <ExternalLink className="w-4 h-4" />
+                </Link>
               </div>
-              <Link to={`/employees/${report.id}`} className="btn-ghost p-2">
-                <ExternalLink className="w-4 h-4" />
-              </Link>
-            </div>
-          ))}
+            ))}
         </div>
       )}
     </div>
