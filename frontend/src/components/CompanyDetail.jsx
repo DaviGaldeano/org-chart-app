@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { Building2, Users, Plus, ArrowLeft, Trash2, User } from 'lucide-react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -18,6 +18,8 @@ async function fetchEmployees(companyId) {
 async function deleteEmployeeById(employeeId) {
   const res = await fetch(`/api/employees/${employeeId}`, { method: 'DELETE' })
   if (!res.ok) throw new Error('Failed to delete employee')
+
+  if (res.status === 204) return null
   return res.json()
 }
 
@@ -25,6 +27,7 @@ export default function CompanyDetail() {
   const { id: companyId } = useParams()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const [deletingEmployeeId, setDeletingEmployeeId] = useState(null)
 
   const {
     data: company,
@@ -57,9 +60,20 @@ export default function CompanyDetail() {
     },
   })
 
-
   const deleteEmployee = (id) => {
-    mutation.mutate(id)
+    setDeletingEmployeeId(id)
+    mutation.mutate(id, {
+      onSettled: () => {
+        setDeletingEmployeeId(null)
+      },
+      onSuccess: () => {
+        queryClient.refetchQueries(['employees', companyId])
+        alert('Colaborador removido com sucesso!')
+      },
+      onError: (error) => {
+        alert('Erro ao remover colaborador: ' + error.message)
+      }
+    })
   }
 
   if (loadingCompany || loadingEmployees) {
@@ -155,10 +169,10 @@ export default function CompanyDetail() {
                   </Link>
                   <button
                     onClick={() => deleteEmployee(emp.id)}
-                    disabled={mutation.isLoading}
+                    disabled={deletingEmployeeId === emp.id}
                     className="btn-destructive ml-4 flex items-center gap-1"
                   >
-                    {mutation.isLoading ? (
+                    {deletingEmployeeId === emp.id ? (
                       <div className="loading-spinner w-4 h-4" />
                     ) : (
                       <>

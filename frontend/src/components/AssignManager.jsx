@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { UserCheck, ChevronDown, CheckCircle } from 'lucide-react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-dom'
 
 async function fetchCandidates(employeeId) {
   const res = await fetch(`/api/employees/${employeeId}/candidates`)
@@ -31,16 +32,20 @@ export default function AssignManager({ employeeId, onAssign }) {
     enabled: !!employeeId,
   })
 
+  const navigate = useNavigate()
+
   const mutation = useMutation({
     mutationFn: (managerId) => assignManager(employeeId, managerId),
-    onSuccess: () => {
-      onAssign()
+    onSuccess: (_data, managerId) => {
       queryClient.invalidateQueries({ queryKey: ['employee', employeeId] })
+      onAssign()
+      navigate(`/employees/${managerId}`) // redireciona para o gerente
     },
     onError: (error) => {
       alert(error.message)
     },
   })
+
 
   const assign = () => {
     if (!selected) return

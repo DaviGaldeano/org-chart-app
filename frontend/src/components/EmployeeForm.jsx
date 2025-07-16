@@ -51,7 +51,6 @@ export default function EmployeeForm() {
           <div className="flex items-center gap-4">
             <User className="w-8 h-8 text-primary" />
           </div>
-          <h1 className="header-title">Novo Colaborador</h1>
           <p className="text-muted-foreground">
             Adicione um novo colaborador à empresa
           </p>
