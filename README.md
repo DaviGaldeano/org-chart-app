@@ -100,6 +100,8 @@ bundle install
 rails db:create
 rails db:migrate
 rails db:seed
+
+# Iniciar o servidor de backend
 rails server
 ```
 
@@ -112,6 +114,8 @@ O backend estará disponível em: [http://localhost:3000](http://localhost:3000)
 ```bash
 cd ../frontend
 npm install
+
+# Iniciar o servidor de frontend
 npm run dev
 
 ```
