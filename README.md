@@ -80,8 +80,6 @@ sudo -u postgres psql
 
 - Git
 
-
-
 ### 2. Clonar o repositório
 
 ```bash
