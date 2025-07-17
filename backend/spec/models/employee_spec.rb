@@ -19,35 +19,28 @@ RSpec.describe Employee, type: :model do
   describe 'associations' do
     it 'belongs to a company' do
       company = Company.create!(name: 'CompX')
-      employee = described_class.create!(name: 'Alice', email: 'a@x.com', company: company)
+      employee = described_class.create!(name: 'Alice', email: 'a@x.com', company: company, hierarchy: 1)
       expect(employee.company).to eq(company)
     end
   end
 
   describe 'hierarchy' do
     let(:company) { Company.create!(name: 'TestCo') }
-    let(:manager) { described_class.create!(name: 'Manager', email: 'mgr@test.com', company: company) }
+    let(:manager) { described_class.create!(name: 'Manager', email: 'mgr@test.com', company: company, hierarchy: 3) }
     let(:subordinate) do
-      described_class.create!(name: 'Subordinate', email: 'sub@test.com', company: company, manager: manager)
+      described_class.new(name: 'Subordinate', email: 'sub@test.com', company: company, manager: manager, hierarchy: 1)
     end
 
-    it 'is invalid when manager assignment creates a loop' do
-      manager.manager = subordinate
-      expect(manager).not_to be_valid
-    end
-
-    it 'has error message for cyclic manager assignment' do
-      manager.manager = subordinate
-      manager.valid?
-      expect(manager.errors[:manager_id]).to include('creates a loop in the hierarchy')
+    it 'is invalid when manager has lower or equal hierarchy' do
+      invalid_manager = described_class.new(name: 'Junior Manager', email: 'jm@test.com', company: company,
+                                            hierarchy: 1)
+      subordinate.manager = invalid_manager
+      expect(subordinate.valid?).to be false
+      expect(subordinate.errors[:manager_id]).to include('deve ter nível hierárquico superior')
     end
 
     it 'allows valid manager assignment' do
-      new_manager = described_class.create!(name: 'New Manager', email: 'newmgr@test.com', company: company)
-      new_employee = described_class.new(name: 'New Employee', email: 'newemp@test.com', company: company,
-                                         manager: new_manager)
-
-      expect(new_employee).to be_valid
+      expect(subordinate).to be_valid
     end
   end
 end

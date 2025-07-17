@@ -12,14 +12,18 @@ qulture, uol = companies
 Rails.logger.debug 'Seeding employees (step 1 - without managers)...'
 
 employees_data = [
-  { name: 'Gerente', email: 'davi@gmail.com', picture: 'https://i.pravatar.cc/150?img=3', company: qulture },
-  { name: 'LiderDoGerente', email: 'daviLiderDo@gmail.com', picture: 'https://i.pravatar.cc/150?img=25',
-    company: qulture },
-  { name: 'Colaborador', email: 'davi2@gmail.com', picture: 'https://i.pravatar.cc/150?img=10', company: qulture },
-  { name: 'estagiário', email: 'daviss@gmail.com', picture: 'https://i.pravatar.cc/150?img=1', company: qulture },
-  { name: 'LiderGerenteUol', email: 'da@gmail.com', picture: 'https://i.pravatar.cc/150?img=50', company: uol },
-  { name: 'GerenteUol', email: 'galdeano@gmail.com', picture: 'https://i.pravatar.cc/150?img=15', company: uol },
-  { name: 'ColaboradorUol', email: 'davissax@gmail.com', picture: 'https://i.pravatar.cc/150?img=16', company: uol }
+  { name: 'Alice Johnson', email: 'alice@qulture.com', picture: 'https://i.pravatar.cc/150?img=3', company: qulture,
+    hierarchy: 3 },
+  { name: 'Bob Smith', email: 'bob@qulture.com', picture: 'https://i.pravatar.cc/150?img=25', company: qulture,
+    hierarchy: 2 },
+  { name: 'Charlie Lee', email: 'charlie@qulture.com', picture: 'https://i.pravatar.cc/150?img=10', company: qulture,
+    hierarchy: 1 },
+  { name: 'Dana White', email: 'dana@qulture.com', picture: 'https://i.pravatar.cc/150?img=1', company: qulture,
+    hierarchy: 1 },
+  { name: 'Eve Black', email: 'eve@uol.com', picture: 'https://i.pravatar.cc/150?img=50', company: uol, hierarchy: 3 },
+  { name: 'Frank Green', email: 'frank@uol.com', picture: 'https://i.pravatar.cc/150?img=15', company: uol,
+    hierarchy: 2 },
+  { name: 'Grace Kim', email: 'grace@uol.com', picture: 'https://i.pravatar.cc/150?img=16', company: uol, hierarchy: 1 }
 ]
 
 # cria sem manager
@@ -30,10 +34,11 @@ end
 
 Rails.logger.debug 'Updating manager relationships (step 2)...'
 
-employees['davi@gmail.com'].update!(manager: employees['daviLiderDo@gmail.com'])
-employees['davi2@gmail.com'].update!(manager: employees['davi@gmail.com'])
-employees['daviss@gmail.com'].update!(manager: employees['davi2@gmail.com'])
-employees['galdeano@gmail.com'].update!(manager: employees['da@gmail.com'])
-employees['davissax@gmail.com'].update!(manager: employees['galdeano@gmail.com'])
+employees['bob@qulture.com'].update!(manager: employees['alice@qulture.com'])
+employees['charlie@qulture.com'].update!(manager: employees['bob@qulture.com'])
+employees['dana@qulture.com'].update!(manager: employees['bob@qulture.com'])
+
+employees['frank@uol.com'].update!(manager: employees['eve@uol.com'])
+employees['grace@uol.com'].update!(manager: employees['frank@uol.com'])
 
 Rails.logger.debug '✅ Seed concluído com sucesso!'

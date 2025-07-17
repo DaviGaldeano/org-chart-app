@@ -7,6 +7,12 @@ import DirectReports from './DirectReports'
 import Peers from './Peers'
 import IndirectReports from './IndirectReports'
 
+const HIERARCHY_LABELS = {
+  junior: "Júnior",
+  pleno: "Pleno",
+  senior: "Sênior"
+}
+
 export default function EmployeeDetail() {
   const { employeeId } = useParams()
   const {
@@ -61,7 +67,9 @@ export default function EmployeeDetail() {
                 )}
               </div>
               <div>
-                <h1 className="header-title">{employee.name}</h1>
+                <h1 className="header-title">
+                  {`${employee.name} (${HIERARCHY_LABELS[employee.hierarchy]})`}
+                  </h1>
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Mail className="w-4 h-4" />
                   <span>{employee.email}</span>
@@ -73,7 +81,7 @@ export default function EmployeeDetail() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           <AssignManager employeeId={employeeId} onAssign={refetch} />
-          <DirectReports employeeId={employeeId} />
+          <DirectReports employeeId={employeeId} employee={employee} />
           <Peers employeeId={employeeId} />
           <IndirectReports employeeId={employeeId} />
         </div>

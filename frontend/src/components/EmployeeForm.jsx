@@ -50,7 +50,7 @@ export default function EmployeeForm() {
         )}
 
         <form onSubmit={handleSubmit} className="form-container">
-          <div className="mb-6 relative">
+          <div className="mb-4 relative">
             <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-10 h-5 text-muted-foreground" />
             <input
               name="name"
@@ -89,6 +89,21 @@ export default function EmployeeForm() {
               disabled={mutation.isLoading}
               className="w-full pr-4 py-2 pl-8 rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             />
+          </div>
+
+          <div className="mb-4">
+            <select
+              name="hierarchy"
+              value={form.hierarchy}
+              onChange={handleChange}
+              disabled={mutation.isLoading}
+              className="w-full pr-10 py-2 pl-3 px-2 rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent appearance-none"
+            >
+              <option value="">Selecione um nível hierárquico</option>
+              <option value="junior">Júnior</option>
+              <option value="pleno">Pleno</option>
+              <option value="senior">Sênior</option>
+            </select>
           </div>
 
           <div className="form-actions flex justify-between gap-2 mt-6">

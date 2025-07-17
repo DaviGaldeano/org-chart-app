@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { assignManager } from '@/api/employeeApi'
 
-export function useAssignManager(employeeId, onSuccessCallback) {
+export function useAssignManager(employeeId, onSuccessCallback, onErrorCallback) {
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -10,5 +10,8 @@ export function useAssignManager(employeeId, onSuccessCallback) {
       queryClient.invalidateQueries({ queryKey: ['employee', employeeId] })
       onSuccessCallback(managerId)
     },
+    onError: (error) => {
+      onErrorCallback(error)
+    }
   })
 }

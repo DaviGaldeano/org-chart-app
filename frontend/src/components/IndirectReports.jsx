@@ -1,6 +1,7 @@
 import React from 'react'
 import { Users } from 'lucide-react'
 import { useIndirectReports } from '@/hooks/useIndirectReports'
+import { Link } from 'react-router-dom'
 
 export default function IndirectReports({ employeeId }) {
   const { data: indirects = [], isLoading } = useIndirectReports(employeeId)
@@ -21,6 +22,17 @@ export default function IndirectReports({ employeeId }) {
           {indirects.map((e) => (
             <li key={e.id}>
               {e.name} ({e.email})
+              <span className="text-muted-foreground ml-1 italic">
+                — liderado por{' '}
+                {
+                  e.manager ? (
+                    <Link to={`/employees/${e.manager.id}`} className="underline hover:text-primary">
+                      {e.manager.name}
+                    </Link>
+                  ) : (
+                    'desconhecido'
+                  )}
+              </span>
             </li>
           ))}
         </ul>

@@ -3,7 +3,13 @@ import { Link } from 'react-router-dom'
 import { Users, User, ExternalLink } from 'lucide-react'
 import { useDirectReports } from '@/hooks/useDirectReports'
 
-export default function DirectReports({ employeeId }) {
+const HIERARCHY_LABELS = {
+  junior: "Júnior",
+  pleno: "Pleno",
+  senior: "Sênior"
+}
+
+export default function DirectReports({ employeeId, employee }) {
   const { data: reports = [], isLoading, isError } = useDirectReports(employeeId)
 
   if (isLoading) {
@@ -30,7 +36,7 @@ export default function DirectReports({ employeeId }) {
     <div className="bg-background/30 rounded-lg p-4 border border-border/30">
       <div className="flex items-center gap-2 mb-4">
         <Users className="w-5 h-5 text-primary" />
-        <h3 className="font-semibold">Liderados diretos</h3>
+        <h3 className="font-semibold">{`Liderados por ${employee.name}`}</h3>
         <span className="text-sm text-muted-foreground">({reports.length})</span>
       </div>
 
@@ -59,7 +65,7 @@ export default function DirectReports({ employeeId }) {
                   </div>
                 )}
                 <div>
-                  <div className="font-medium">{report.name}</div>
+                  <div className="font-medium">{`${report.name} (${HIERARCHY_LABELS[report.hierarchy]})`}</div>
                   <div className="text-sm text-muted-foreground">Relatório direto</div>
                 </div>
               </div>

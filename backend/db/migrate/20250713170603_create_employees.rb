@@ -7,6 +7,7 @@ class CreateEmployees < ActiveRecord::Migration[7.1]
       t.string :name
       t.string :email
       t.string :picture
+      t.integer :hierarchy, null: false
       t.references :company, null: false, foreign_key: true
       t.references :manager, foreign_key: { to_table: :employees }
 

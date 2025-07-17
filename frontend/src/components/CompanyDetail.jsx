@@ -5,6 +5,12 @@ import { useCompany } from '@/hooks/useCompany'
 import { useCompanyEmployees } from '@/hooks/useCompanyEmployees'
 import { useDeleteEmployee } from '@/hooks/useDeleteEmployee'
 
+const HIERARCHY_LABELS = {
+  junior: "Júnior",
+  pleno: "Pleno",
+  senior: "Sênior"
+}
+
 export default function CompanyDetail() {
   const { id: companyId } = useParams()
   const navigate = useNavigate()
@@ -126,7 +132,7 @@ export default function CompanyDetail() {
                       )}
                     </div>
                     <div>
-                      <div className="font-medium">{emp.name}</div>
+                      <div className="font-medium">{`${emp.name} (${HIERARCHY_LABELS[emp.hierarchy]})`}</div>
                       <div className="text-sm text-muted-foreground">{emp.email}</div>
                     </div>
                   </Link>

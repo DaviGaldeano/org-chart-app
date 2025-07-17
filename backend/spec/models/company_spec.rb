@@ -21,7 +21,7 @@ RSpec.describe Company, type: :model do
 
   it 'destroys its employees when deleted' do
     company = described_class.create!(name: 'DeleteMe Inc.')
-    company.employees.create!(name: 'John Doe', email: 'john@example.com')
+    company.employees.create!(name: 'John Doe', email: 'john@example.com', hierarchy: 1)
 
     expect { company.destroy }.to change(Employee, :count).by(-1)
   end

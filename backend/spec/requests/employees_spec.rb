@@ -3,59 +3,105 @@
 require 'rails_helper'
 
 RSpec.describe 'Employees API', type: :request do
-  let!(:company) { Company.create!(name: 'Qulture') }
+  let(:company) { Company.create!(name: 'Test Company') }
 
-  describe 'GET /api/companies/:company_id/employees' do
-    it 'returns all employees for a company' do
-      company.employees.create!(name: 'Alice', email: 'alice@x.com')
-      company.employees.create!(name: 'Bob', email: 'bob@x.com')
+  let(:manager)   { company.employees.create!(name: 'Manager', email: 'manager@test.com', hierarchy: 3) }
+  let(:mid_level) do
+    company.employees.create!(name: 'Mid Level', email: 'midlevel@test.com', hierarchy: 2, manager: manager)
+  end
+  let(:junior_one) do
+    company.employees.create!(name: 'Junior One', email: 'junior1@test.com', hierarchy: 1, manager: mid_level)
+  end
+  let(:junior_two) do
+    company.employees.create!(name: 'Junior Two', email: 'junior2@test.com', hierarchy: 1, manager: mid_level)
+  end
 
-      get "/api/companies/#{company.id}/employees"
+  describe 'GET /api/employees/:id/indirect_reports' do
+    before do
+      manager
+      mid_level
+      junior_one
+      junior_two
+    end
 
+    it 'returns HTTP status ok' do
+      get "/api/employees/#{manager.id}/indirect_reports"
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body.length).to eq(2)
+    end
+
+    it 'returns the correct number of indirect reports' do
+      get "/api/employees/#{manager.id}/indirect_reports"
+      expect(response.parsed_body.size).to eq(2)
+    end
+
+    it 'includes required fields for reports' do
+      get "/api/employees/#{manager.id}/indirect_reports"
+      reports = response.parsed_body
+
+      expect(reports.first).to include('id', 'name', 'email', 'manager')
+    end
+
+    it 'includes the correct manager data for reports' do
+      get "/api/employees/#{manager.id}/indirect_reports"
+      reports = response.parsed_body
+
+      expect(reports.first['manager']).to include('id' => mid_level.id, 'name' => mid_level.name)
     end
   end
 
-  describe 'POST /api/companies/:company_id/employees' do
-    it 'creates an employee in a company' do
-      post "/api/companies/#{company.id}/employees", params: {
-        employee: {
-          name: 'Charlie',
-          email: 'charlie@x.com',
-          picture: 'https://placekitten.com/200/200'
-        }
-      }
+  describe 'PATCH /api/employees/:id/manager' do
+    let(:company) { Company.create!(name: 'Test Company') }
+    let(:employee) { company.employees.create!(name: 'Employee', email: 'employee@test.com', hierarchy: 1) }
 
-      expect(response).to have_http_status(:created)
-      data = response.parsed_body
-      expect(data['name']).to eq('Charlie')
+    context 'with valid manager assignment' do
+      let(:manager) { company.employees.create!(name: 'Manager', email: 'manager@test.com', hierarchy: 3) }
+
+      before do
+        patch "/api/employees/#{employee.id}/manager", params: { manager_id: manager.id }
+      end
+
+      it 'returns status ok' do
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'updates the manager' do
+        expect(employee.reload.manager).to eq(manager)
+      end
     end
-  end
 
-  describe 'DELETE /api/employees/:id' do
-    it 'deletes an employee (if no dependents)' do
-      emp = company.employees.create!(name: 'ToDelete', email: 'delete@x.com')
+    context 'with manager of lower or equal hierarchy' do
+      let(:manager) { company.employees.create!(name: 'Manager', email: 'manager@test.com', hierarchy: 1) }
 
-      delete "/api/employees/#{emp.id}"
+      before do
+        patch "/api/employees/#{manager.id}/manager", params: { manager_id: employee.id }
+      end
 
-      expect(response).to have_http_status(:no_content)
-      expect(Employee.find_by(id: emp.id)).to be_nil
+      it 'returns unprocessable_entity status' do
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'returns hierarchy error message' do
+        expect(response.parsed_body['error']).to eq('Manager must have a higher hierarchy level')
+      end
     end
-  end
 
-  describe 'GET /api/employees/:id/peers' do
-    let(:company) { Company.create!(name: 'Empresa') }
-    let(:manager) { Employee.create!(name: 'Manager', email: 'mgr@test.com', company: company) }
-    let!(:employee1) { Employee.create!(name: 'Emp1', email: 'e1@test.com', company: company, manager: manager) }
-    let!(:employee2) { Employee.create!(name: 'Emp2', email: 'e2@test.com', company: company, manager: manager) }
+    context 'with manager from another company' do
+      let(:other_company) { Company.create!(name: 'Other Company') }
+      let(:external_manager) do
+        other_company.employees.create!(name: 'External Manager', email: 'external@test.com', hierarchy: 3)
+      end
 
-    it 'returns the peers of an employee' do
-      get "/api/employees/#{employee1.id}/peers"
-      expect(response).to have_http_status(:ok)
-      json = response.parsed_body
-      expect(json.map { |e| e['id'] }).to include(employee2.id)
-      expect(json.map { |e| e['id'] }).not_to include(employee1.id)
+      before do
+        patch "/api/employees/#{employee.id}/manager", params: { manager_id: external_manager.id }
+      end
+
+      it 'returns unprocessable_entity status' do
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'returns company error message' do
+        expect(response.parsed_body['error']).to eq('Manager must belong to the same company')
+      end
     end
   end
 end

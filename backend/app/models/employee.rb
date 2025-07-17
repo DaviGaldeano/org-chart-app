@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# app/models/employee.rb
 class Employee < ApplicationRecord
   belongs_to :company
   belongs_to :manager, class_name: 'Employee', optional: true
@@ -10,20 +9,19 @@ class Employee < ApplicationRecord
            dependent: :nullify,
            inverse_of: :manager
 
-  validates :name, presence: true
+  enum :hierarchy, { junior: 1, pleno: 2, senior: 3 }
 
-  validate :manager_cannot_create_loop
+  validates :name, presence: true
+  validates :hierarchy, presence: true
+  validate :manager_must_have_higher_hierarchy
 
   private
 
-  def manager_cannot_create_loop
-    current = manager
-    while current
-      if current == self
-        errors.add(:manager_id, 'creates a loop in the hierarchy')
-        break
-      end
-      current = current.manager
-    end
+  def manager_must_have_higher_hierarchy
+    return if manager.nil?
+
+    return unless manager.hierarchy_before_type_cast <= hierarchy_before_type_cast
+
+    errors.add(:manager_id, 'deve ter nível hierárquico superior')
   end
 end

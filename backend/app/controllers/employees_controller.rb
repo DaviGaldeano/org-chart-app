@@ -38,15 +38,16 @@ class EmployeesController < ApplicationController
   def manager
     new_manager = Employee.find(params[:manager_id])
 
-   return render_error('Manager must belong to the same company') unless same_company?(new_manager)
-   return render_error('Cannot assign manager due to hierarchy loop') if check_hierarchy?(@employee, new_manager)
+    return render_error('Manager must belong to the same company') unless same_company?(new_manager)
+    return render_error('Manager must have a higher hierarchy level') unless manager_has_higher_hierarchy?(new_manager,
+                                                                                                           @employee)
 
-   @employee.manager = new_manager
-   if @employee.save
-     render json: @employee
-   else
-     render json: { errors: @employee.errors.full_messages }, status: :unprocessable_entity
-   end
+    @employee.manager = new_manager
+    if @employee.save
+      render json: @employee
+    else
+      render json: { errors: @employee.errors.full_messages }, status: :unprocessable_entity
+    end
   end
 
   def peers
@@ -70,7 +71,7 @@ class EmployeesController < ApplicationController
 
   def indirect_reports
     indirects = @employee.direct_reports.flat_map(&:direct_reports)
-    render json: indirects
+    render json: indirects.as_json(include: { manager: { only: %i[id name] } }, only: %i[id name email])
   end
 
   private
@@ -88,16 +89,10 @@ class EmployeesController < ApplicationController
   end
 
   def employee_params
-    params.require(:employee).permit(:name, :email, :picture)
+    params.require(:employee).permit(:name, :email, :picture, :hierarchy)
   end
 
-  def check_hierarchy?(employee, new_manager)
-    current_manager = new_manager
-    while current_manager
-      return true if current_manager == employee
-
-      current_manager = current_manager.manager
-    end
-    false
+  def manager_has_higher_hierarchy?(manager, employee)
+    manager.hierarchy_before_type_cast > employee.hierarchy_before_type_cast
   end
 end

@@ -31,10 +31,13 @@ O objetivo é implementar funcionalidades de cadastro, listagem, visualização 
 
 - Associar colaborador como gestor de outro, ambos na mesma empresa
 - Cada colaborador pode ter no máximo um gestor
-- Evitar loops hierárquicos (não permitir que subordinado seja gestor do seu gestor)
-- Listar pares de um colaborador (outros colaboradores do mesmo gestor)
+- Um gestor deve ter nível hierárquico superior ao subordinado (junior < pleno < senior)
+- Evitar hierarquias cíclicas por meio da validação de níveis hierárquicos
+- Listar pares de um colaborador (outros colaboradores com o mesmo gestor)
 - Listar liderados diretos
 - Listar liderados indiretos (segundo nível)
+
+> **Nota:** A validação hierárquica assegura que um gestor deve ter nível superior ao subordinado, eliminando a necessidade de detectar ciclos explicitamente.
 
 ---
 
@@ -69,7 +72,18 @@ O objetivo é implementar funcionalidades de cadastro, listagem, visualização 
 - Rails
 - Node.js + npm
 - PostgreSQL
+### Pré-requisitos - Banco de Dados PostgreSQL
+
+- Ter PostgreSQL instalado e rodando localmente.
+- Certifique-se que existe o usuário `postgres` com a senha `uolProject`, ou ajuste `config/database.yml` para refletir seu usuário e senha local.
+- Para criar/alterar o usuário no terminal do PostgreSQL:
+
+```bash
+sudo -u postgres psql
+
 - Git
+
+
 
 ### 2. Clonar o repositório
 
@@ -90,7 +104,7 @@ bundle install
 
 rails db:create
 rails db:migrate
-rails db:seed 
+rails db:seed
 rails server
 ```
 
