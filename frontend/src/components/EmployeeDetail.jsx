@@ -80,7 +80,7 @@ export default function EmployeeDetail() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <AssignManager employeeId={employeeId} onAssign={refetch} />
+          <AssignManager employeeId={employeeId} manager={employee.manager} onAssign={refetch} />
           <DirectReports employeeId={employeeId} employee={employee} />
           <Peers employeeId={employeeId} />
           <IndirectReports employeeId={employeeId} />

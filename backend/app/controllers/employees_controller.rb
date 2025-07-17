@@ -13,7 +13,11 @@ class EmployeesController < ApplicationController
   def show
     employee = Employee.find_by(id: params[:id])
     if employee
-      render json: employee
+      render json: employee.as_json(include: {
+                                      manager: {
+                                        only: %i[id name hierarchy]
+                                      }
+                                    })
     else
       render json: { error: 'Employee not found' }, status: :not_found
     end

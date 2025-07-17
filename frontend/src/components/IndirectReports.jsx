@@ -10,13 +10,13 @@ export default function IndirectReports({ employeeId }) {
     <div className="card-elevated">
       <h2 className="section-title mb-2 flex items-center gap-2">
         <Users className="w-5 h-5 text-primary" />
-        Liderados Indiretos
+        Liderados (segundo nível)
       </h2>
 
       {isLoading ? (
         <p className="text-muted-foreground">Carregando liderados...</p>
       ) : indirects.length === 0 ? (
-        <p className="text-muted-foreground italic">Sem liderados indiretos</p>
+        <p className="text-muted-foreground italic">Não atribuído</p>
       ) : (
         <ul className="list-disc list-inside text-sm text-foreground">
           {indirects.map((e) => (

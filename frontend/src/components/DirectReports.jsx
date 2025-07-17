@@ -66,7 +66,6 @@ export default function DirectReports({ employeeId, employee }) {
                 )}
                 <div>
                   <div className="font-medium">{`${report.name} (${HIERARCHY_LABELS[report.hierarchy]})`}</div>
-                  <div className="text-sm text-muted-foreground">Relatório direto</div>
                 </div>
               </div>
               <Link to={`/employees/${report.id}`} className="btn-ghost p-2">

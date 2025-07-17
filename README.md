@@ -1,6 +1,3 @@
-Claro! Vou ajustar o README para você, organizando a seção de passos 3, 4, 5 dentro da parte "Como Rodar Localmente" sem que precise usar #, deixando o texto limpo, com linhas de separação e indentação para facilitar a leitura.
-
-Segue uma versão melhor formatada e “bonita” do seu README:
 
 ````markdown
 # Challenge - Dev [FULLSTACK] - Organograma da Empresa
